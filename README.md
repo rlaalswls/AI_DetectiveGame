@@ -1,4 +1,4 @@
-# 🕵️‍♀️ AI Detective Game
+# 🕵️‍♀️🕵️ AI Detective Game
 
 An AI text-based mystery adventure game. The player investigates various locations, collects evidence, interrogates suspects, and uncovers the truth behind the incident.
 
