@@ -3,11 +3,11 @@
 AI 기반 C 텍스트 추리 어드벤처 게임 프로젝트입니다. 플레이어는 주어진 단서와 증거를 바탕으로 범인을 추리하게 됩니다.
 An AI text-based mystery adventure game. The player investigates various locations, collects evidence, interrogates suspects, and uncovers the truth behind the incident.
 
-## 📁 File Structure
+## File Structure
 
 ```
 game/
-├── assets/              # 증거/용의자 텍스트 파일 (GPT 전달용)
+├── assets/              # 증거/용의자, 질문/응답 텍스트 파일 (GPT 전달용)
 ├── gpt/                 # GPT 응답 처리 파이썬 스크립트
 ├── src/                 # 메인 C 코드 및 게임 로직
 └── main                 # 빌드된 실행 파일 (main)
