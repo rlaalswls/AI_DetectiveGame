@@ -72,14 +72,14 @@ OPENAI_API_KEY=your_openai_api_key_here
 ### 시나리오 2: Observatory Unavailable
 
 * 장소: 외딴 산 속 관측소
-* 피해자: 윤지훈 박사 (천체물리학자)
+* 피해자: 천체물리학 박사 윤지훈
 * 사인: 둔기 가격
 * 난이도: Normal
 
 ### 시나리오 3: Unknown Coffee
 
 * 장소: 종로구 디자인 카페
-* 피해자: 최서준 사장
+* 피해자: 사장 최서준
 * 사인: 독극물 중독
 * 난이도: Easy
 
