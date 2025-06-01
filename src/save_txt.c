@@ -1,7 +1,7 @@
-//GPT 전달 데이터 .txt 저장
-
 #include <stdio.h>
+#include <string.h>
 #include "game_structs.h"
+
 
 // 증거 정보 저장
 void saveEvidenceToFile(GameState *game, const char *filename) {
@@ -11,12 +11,11 @@ void saveEvidenceToFile(GameState *game, const char *filename) {
         return;
     }
 
-    for (int i = 0; i < MAX_EVIDENCE; i++) {
+    for (int i = 0; i < game->evidenceCount; i++) {
         Evidence *e = &game->evidences[i];
         fprintf(fp, "이름: %s\n", e->name);
         fprintf(fp, "설명: %s\n", e->description);
         fprintf(fp, "위치: %s\n", e->location);
-        fprintf(fp, "중요도: %s\n", e->isKeyEvidence ? "중요" : "보통");
         fprintf(fp, "---\n");
     }
 
@@ -31,7 +30,7 @@ void saveSuspectsToFile(GameState *game, const char *filename) {
         return;
     }
 
-    for (int i = 0; i < MAX_SUSPECTS; i++) {
+    for (int i = 0; i < game->suspectCount; i++) {
         Suspect *s = &game->suspects[i];
         fprintf(fp, "이름: %s\n", s->name);
         fprintf(fp, "직업: %s\n", s->job);
@@ -42,6 +41,6 @@ void saveSuspectsToFile(GameState *game, const char *filename) {
         fprintf(fp, "범인 여부: %s\n", s->isCulprit ? "범인" : "아님");
         fprintf(fp, "---\n");
     }
-
+    
     fclose(fp);
 }
