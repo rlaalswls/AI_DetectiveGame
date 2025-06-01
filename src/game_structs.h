@@ -1,11 +1,9 @@
-// 구조체 정의 헤더
-
 #ifndef GAME_STRUCTS_H
 #define GAME_STRUCTS_H
 
 #define MAX_SUSPECTS 4
-#define MAX_LOCATIONS 2
-#define MAX_EVIDENCE 5
+#define MAX_LOCATIONS 3
+#define MAX_EVIDENCE 6
 #define MAX_INTERROGATIONS 10
 #define MAX_PRESS_CHANCES 5
 
@@ -14,7 +12,6 @@ typedef struct {
     char name[64];
     char description[256];
     char location[64]; // 발견된 장소
-    int isKeyEvidence; // 1이면 중요한 증거, 0이면 미끼 증거
 } Evidence;
 
 // 장소 구조체
@@ -38,6 +35,8 @@ typedef struct {
 
 // 전체 게임 상태 구조체
 typedef struct {
+    int evidenceCount; // 실제 증거 개수
+    int suspectCount;  // 실제 용의자 수
     Location locations[MAX_LOCATIONS];
     Suspect suspects[MAX_SUSPECTS];
     Evidence evidences[MAX_EVIDENCE];
@@ -45,11 +44,22 @@ typedef struct {
     int foundEvidence[MAX_EVIDENCE]; // 플레이어가 발견한 증거 여부
     int pressChances; // 추궁 기회
     Suspect interrogationCount[MAX_INTERROGATIONS]; // 심문 횟수
+    char currentLocationName[64]; // 현재 위치 이름
+    int scenarioNumber;
+
+    
 } GameState;
 
-void printCaseIntroduction();
-void init_game_state(GameState *game);
+void CaseIntroduction1();
+void CaseIntroduction2();
+void CaseIntroduction3();
+void init_game_state1(GameState *game);
+void init_game_state2(GameState *game);
+void init_game_state3(GameState *game);
 void saveEvidenceToFile(GameState *game, const char *filename);
 void saveSuspectsToFile(GameState *game, const char *filename);
+void ending1(int isCorrect);
+void ending2(int isCorrect);
+void ending3(int isCorrect);
 
 #endif // GAME_STRUCTS_H
