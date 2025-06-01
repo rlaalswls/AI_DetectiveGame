@@ -1,11 +1,7 @@
-#pip install openai
-#pip install python-dotenv
-
 from dotenv import load_dotenv
 from openai import OpenAI
 import os
 import sys
-import json
 
 # (1) OpenAI API 키 입력
 load_dotenv()
@@ -29,15 +25,15 @@ def load_txt_data(filename):
                 entry[key] = value
     return entries
 
-suspects = load_txt_data("/Users/sienna/Cworkspace/game/assets/suspect_profiles.txt")
-evidences = load_txt_data("/Users/sienna/Cworkspace/game/assets/evidence.txt")
+suspects = load_txt_data("../game/assets/suspect_profiles.txt")
+evidences = load_txt_data("../game/assets/evidence.txt")
 
 # (3) 실행 인자 받기
 # 예시: python3 gpt_response.py press "이유빈"
 mode = sys.argv[1]  # 'press' or 'interrogate'
 suspect_name = sys.argv[2]
-question_file = f"/Users/sienna/Cworkspace/game/assets/question_{mode}.txt"
-response_file = f"/Users/sienna/Cworkspace/game/assets/response_{mode}.txt"
+question_file = f"../game/assets/question_{mode}.txt"
+response_file = f"../game/assets/response_{mode}.txt"
 
 # (4) 질문 읽기
 with open(question_file, 'r', encoding='utf-8') as f:
@@ -48,7 +44,7 @@ def build_system_prompt(suspects, evidences, suspect_name, mode):
     
     prompt = f"""
 너는 추리게임의 등장인물인 용의자 n명을 각각 연기해야해. 
-다음은 게임에 등장하는 용의자 및 장소와 증거 정보야:
+아래는 게임에 등장하는 용의자 및 장소와 증거 정보야:
 {suspects}
 {evidences}
 플레이어는 이 정보를 바탕으로 너를 심문하거나 추궁할 거야.
@@ -57,13 +53,18 @@ def build_system_prompt(suspects, evidences, suspect_name, mode):
     if mode == "press":
         prompt += """
 
-지금 너는 용의자 {suspect_name}이야. 너는 이 인물을 연기해서 플레이어의 질문에 답해야 해.
-플레이어가 너에게 예리한 추궁을 할 수도 있어.
-그 질문이 논리적으로 효과적인 추궁이었는지 평가해.
+지금 너는 용의자 {suspect_name}를 연기하고 있어. 플레이어의 질문에 답해야 해.
+플레이어가 너에게 예리한 추궁을 할거야.
+추궁이 다음 중 하나를 충족하면 '정확한 추궁'이다:
+- 증거에 기반해 진실을 지적함
+- 용의자의 거짓말이나 알리바이의 허점, 수상한 점을 집어냄
+- 수상한 행동과 증거의 연결을 논리적으로 집어냄
 
-응답은 아래의 포맷을 따르세요:
+그 외에는 '잘못된 추궁'으로 간주해.
+
+응답은 아래의 포맷을 따르라:
 [응답]
-(여기에 용의자의 대답)
+(용의자의 대답)
 
 [판단]
 정확한 추궁 | 잘못된 추궁 중 하나를 선택
