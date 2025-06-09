@@ -1,12 +1,9 @@
-//게임 데이터 초기화 시나리오3
-
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "game_structs.h"
 
-// 사건 개요
 void CaseIntroduction3() {
-    
     printf("=====================================================================\n");
     printf("☕ CODE 404: Unknown Coffee\n");
     printf("=====================================================================\n");
@@ -51,91 +48,91 @@ void CaseIntroduction3() {
     printf("============================================================\n\n");
 }
 
-
 void init_game_state3(GameState *game) {
-    memset(game, 0, sizeof(GameState));  // 전체 구조체 초기화
-    
-    for (int i = 0; i < MAX_EVIDENCE; i++) {
-    memset(&game->evidences[i], 0, sizeof(Evidence));
-    }
-    for (int i = 0; i < MAX_SUSPECTS; i++) {
-        memset(&game->suspects[i], 0, sizeof(Suspect));
-    }
-    // 장소 초기화
-    strcpy(game->locations[0].name, "카페 입구");
-    game->locations[0].evidenceCount = 0;
+    memset(game, 0, sizeof(GameState));
 
-    // 장소 1: 옥상
-    strcpy(game->locations[1].name, "카페 주방");
-    game->locations[1].hasEvidence[0] = 0;
-    game->locations[1].hasEvidence[1] = 1;
-    game->locations[1].evidenceCount = 2;
+    // 장소 연결리스트 생성
+    Location *loc1 = malloc(sizeof(Location));
+    strcpy(loc1->name, "카페 주방");
+    loc1->evidences = NULL;
+    loc1->next = NULL;
 
-    // 장소 2: 전자실험실
-    strcpy(game->locations[2].name, "카페 창고");
-    game->locations[2].hasEvidence[0] = 2;
-    game->locations[2].hasEvidence[1] = 3;
-    game->locations[2].evidenceCount = 2;
+    Location *loc2 = malloc(sizeof(Location));
+    strcpy(loc2->name, "카페 창고");
+    loc2->evidences = NULL;
+    loc2->next = NULL;
 
-    // 플레이어 시작 위치는 "입구"
-    game->currentLocationIndex = 0;
-    strcpy(game->currentLocationName, game->locations[0].name);
+    loc1->next = loc2;
+    game->locations = loc1;
 
-    // 증거 설정
-    // 0 - 수제 시럽 병
-    strcpy(game->evidences[0].name, "수제 시럽 병");
-    strcpy(game->evidences[0].description, "피해자가 먹은 수제 시럽 병. 뚜껑이 헐겁고, 병 표면에서 정윤아의 지문이 검출되었다.");
-    strcpy(game->evidences[0].location, "카페 주방");
+    // 증거 연결리스트 및 장소 연결
+    Evidence *e1 = malloc(sizeof(Evidence));
+    strcpy(e1->name, "수제 시럽 병");
+    strcpy(e1->description, "피해자가 먹은 수제 시럽 병. 뚜껑이 헐겁고, 병 표면에서 정윤아의 지문이 검출되었다.");
+    strcpy(e1->location, "카페 주방");
+    e1->next = NULL;
 
-    // 1 - 커피잔 잔여물
-    strcpy(game->evidences[1].name, "커피잔 잔여물");
-    strcpy(game->evidences[1].description, "피해자가 마신 커피 잔. 성분 분석 결과 미세한 침전물에서 독성 물질 성분이 검출되었다.");
-    strcpy(game->evidences[1].location, "카페 주방");
+    Evidence *e2 = malloc(sizeof(Evidence));
+    strcpy(e2->name, "커피잔 잔여물");
+    strcpy(e2->description, "피해자가 마신 커피 잔. 성분 분석 결과 미세한 침전물에서 독성 물질 성분이 검출되었다.");
+    strcpy(e2->location, "카페 주방");
+    e2->next = e1;
 
-    // 2 - 깨진 유리 약병
-    strcpy(game->evidences[2].name, "깨진 유리 약병");
-    strcpy(game->evidences[2].description, "작은 갈색 유리 약병의 깨진 조각. 커피잔에 들어간 독성 물질의 성분이 검출되었다.");
-    strcpy(game->evidences[2].location, "카페 창고");
+    loc1->evidences = e2;
 
-    // 3 - CCTV 영상
-    strcpy(game->evidences[3].name, "CCTV 영상");
-    strcpy(game->evidences[3].description, "사건 당일 10시 20분경, 장세진이 주방 근처에서 잠시 머물다 가는 모습이 희미하게 보인다.");
-    strcpy(game->evidences[3].location, "카페 창고");
+    Evidence *e3 = malloc(sizeof(Evidence));
+    strcpy(e3->name, "깨진 유리 약병");
+    strcpy(e3->description, "작은 갈색 유리 약병의 깨진 조각. 커피잔에 들어간 독성 물질의 성분이 검출되었다.");
+    strcpy(e3->location, "카페 창고");
+    e3->next = NULL;
 
+    Evidence *e4 = malloc(sizeof(Evidence));
+    strcpy(e4->name, "CCTV 영상");
+    strcpy(e4->description, "사건 당일 10시 20분경, 장세진이 주방 근처에서 잠시 머물다 가는 모습이 희미하게 보인다.");
+    strcpy(e4->location, "카페 창고");
+    e4->next = e3;
 
-    // 용의자 초기화
-    strcpy(game->suspects[0].name, "정윤아");
-    strcpy(game->suspects[0].job, "카페 아르바이트생");
-    strcpy(game->suspects[0].personality, "명랑하지만 감정 기복 있음");
-    strcpy(game->suspects[0].relationWithVictim, "피해자의 커피를 준비한 마지막 인물, 스케줄 문제로 다툼");
-    strcpy(game->suspects[0].alibi, "11시 무렵 카운터에서 계산 마무리 중");
-    strcpy(game->suspects[0].suspicious_points, "시럽 병에서 정윤아의 지문 검출");
-    game->suspects[0].isCulprit = 0;
+    loc2->evidences = e4;
 
-    strcpy(game->suspects[1].name, "윤지석");
-    strcpy(game->suspects[1].job, "카페 공동 운영자");
-    strcpy(game->suspects[1].personality, "이성적이고 계산적인 성격");
-    strcpy(game->suspects[1].relationWithVictim, "수익 분배 문제로 피해자와 갈등, 시럽 재고 독점 관리");
-    strcpy(game->suspects[1].alibi, "11시엔 뒷골목에서 통화 중");
-    strcpy(game->suspects[1].suspicious_points, "시럽 병 접근 가능자 중 하나, 통화 알리바이 확인 불가");
-    game->suspects[1].isCulprit = 0;
+    // 전체 증거 연결
+    game->allEvidences = e4;
 
-    strcpy(game->suspects[2].name, "장세진");
-    strcpy(game->suspects[2].job, "연구원 (단골 손님)");
-    strcpy(game->suspects[2].personality, "과묵하고 침착하지만 집요한 면 있음");
-    strcpy(game->suspects[2].relationWithVictim, "과거 연인 관계, 다툼 있음. 독성 물질 관련 논문 작성 이력");
-    strcpy(game->suspects[2].alibi, "10시 반경 카페 나감 (목격자 없음)");
-    strcpy(game->suspects[2].suspicious_points, "주방 인근에 잠시 머문 CCTV 영상 존재");
-    game->suspects[2].isCulprit = 1;  
+    // 용의자 연결리스트 생성
+    Suspect *s1 = malloc(sizeof(Suspect));
+    strcpy(s1->name, "정윤아");
+    strcpy(s1->job, "카페 아르바이트생");
+    strcpy(s1->personality, "명랑하지만 감정 기복 있음");
+    strcpy(s1->relationWithVictim, "피해자의 커피를 준비한 마지막 인물, 스케줄 문제로 다툼");
+    strcpy(s1->alibi, "11시 무렵 카운터에서 계산 마무리 중");
+    strcpy(s1->suspicious_points, "시럽 병에서 정윤아의 지문 검출");
+    s1->isCulprit = 0; s1->interrogationCount = 0;
+    s1->next = NULL;
 
-    // 기본 상태
-    game->foundEvidence[0] = 0;
+    Suspect *s2 = malloc(sizeof(Suspect));
+    strcpy(s2->name, "윤지석");
+    strcpy(s2->job, "카페 공동 운영자");
+    strcpy(s2->personality, "이성적이고 계산적인 성격");
+    strcpy(s2->relationWithVictim, "수익 분배 문제로 피해자와 갈등, 시럽 재고 독점 관리");
+    strcpy(s2->alibi, "11시엔 뒷골목에서 통화 중");
+    strcpy(s2->suspicious_points, "시럽 병 접근 가능자 중 하나, 통화 알리바이 확인 불가");
+    s2->isCulprit = 0; s2->interrogationCount = 0;
+    s2->next = s1;
+
+    Suspect *s3 = malloc(sizeof(Suspect));
+    strcpy(s3->name, "장세진");
+    strcpy(s3->job, "연구원 (단골 손님)");
+    strcpy(s3->personality, "과묵하고 침착하지만 집요한 면 있음");
+    strcpy(s3->relationWithVictim, "과거 연인 관계, 다툼 있음. 독성 물질 관련 논문 작성 이력");
+    strcpy(s3->alibi, "10시 반경 카페 나감 (목격자 없음)");
+    strcpy(s3->suspicious_points, "주방 인근에 잠시 머문 CCTV 영상 존재");
+    s3->isCulprit = 1; s3->interrogationCount = 0;
+    s3->next = s2;
+
+    game->suspects = s3;
+
+    strcpy(game->currentLocationName, "카페 주방");
     game->pressChances = 5;
-    game->currentLocationIndex = 0;
-    game->scenarioNumber=3;
-    game->evidenceCount = 4;
-    game->suspectCount = 3;
-    strcpy(game->currentLocationName, game->locations[0].name);  
+    game->scenarioNumber = 3;
 }
 
 void ending3(int isCorrect) {
@@ -144,7 +141,7 @@ void ending3(int isCorrect) {
         printf("커피 속 독극물과 쓰레기통 약병이 증거가 되었고 알리바이가 거짓임을 밝혀냈습니다.\n");
         printf("최서준 씨의 억울한 죽음은 당신의 수사 덕분에 진실이 밝혀지고, 범인이 합당한 처벌을 받게 되었습니다.\n");
     } else {
-            printf("안타깝게도 당신은 '커피 한 잔에 숨겨진 진실'을 끝내 밝혀내지 못했습니다.\n");
-            printf("최서준 사장의 죽음은 미제로 남았고, 진실은 영원히 숨겨졌습니다.\n");
+        printf("안타깝게도 당신은 '커피 한 잔에 숨겨진 진실'을 끝내 밝혀내지 못했습니다.\n");
+        printf("최서준 사장의 죽음은 미제로 남았고, 진실은 영원히 숨겨졌습니다.\n");
     }
 }
