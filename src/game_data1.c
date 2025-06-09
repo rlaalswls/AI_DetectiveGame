@@ -1,12 +1,9 @@
-//게임 데이터 초기화 시나리오1
-
 #include <stdio.h>
-#include <string.h>  // memset
+#include <stdlib.h>
+#include <string.h>
 #include "game_structs.h"
 
-//사건 개요
 void CaseIntroduction1() {
-    
     printf("=====================================================================\n");
     printf("🕵️‍♀️ CODE 404: Not Found\n");
     printf("=====================================================================\n");
@@ -18,7 +15,6 @@ void CaseIntroduction1() {
     printf("이제 당신이 직접 나서서 이 사건의 숨겨진 진실을 밝혀내야 할 때입니다.\n");
 
     printf("\n<용의자 목록>\n");
-
     printf("\n1. 이유빈 (23세, 컴퓨터공학과 3학년)\n");
     printf("- 성격: 분석적, 내성적, 완벽주의 성향\n");
     printf("- 관계: 졸업 프로젝트 후배이자 공동 개발자\n");
@@ -60,96 +56,112 @@ void CaseIntroduction1() {
 }
 
 void init_game_state1(GameState *game) {
-    memset(game, 0, sizeof(GameState));  // 전체 구조체 초기화
-    game->evidenceCount = 6;
-    game->suspectCount = 4;
+    memset(game, 0, sizeof(GameState));
 
-    // 장소 초기화
-    strcpy(game->locations[0].name, "공학관 입구");
-    game->locations[0].evidenceCount = 0;
+    // 장소 연결리스트 생성
+    Location *loc1 = malloc(sizeof(Location));
+    strcpy(loc1->name, "옥상");
+    loc1->evidences = NULL;
+    loc1->next = NULL;
 
-    // 장소 1: 옥상
-    strcpy(game->locations[1].name, "옥상");
-    game->locations[1].hasEvidence[0] = 0;
-    game->locations[1].hasEvidence[1] = 1;
-    game->locations[1].hasEvidence[2] = 2;
-    game->locations[1].evidenceCount = 3;
+    Location *loc2 = malloc(sizeof(Location));
+    strcpy(loc2->name, "전자실험실");
+    loc2->evidences = NULL;
+    loc2->next = NULL;
 
-    // 장소 2: 전자실험실
-    strcpy(game->locations[2].name, "전자실험실");
-    game->locations[2].hasEvidence[0] = 3;
-    game->locations[2].hasEvidence[1] = 4;
-    game->locations[2].hasEvidence[2] = 5;
-    game->locations[2].evidenceCount = 3;
+    loc1->next = loc2;
+    game->locations = loc1;
 
-    // 플레이어 시작 위치는 "복도"
-    game->currentLocationIndex = 0;
-    strcpy(game->currentLocationName, game->locations[0].name);
+    // 증거 연결리스트 생성 및 장소 연결
+    Evidence *e1 = malloc(sizeof(Evidence));
+    strcpy(e1->name, "신발 끌린 자국");
+    strcpy(e1->description, "옥상 난간 근처에서 발견된 신발 끌린 자국. 몸싸움의 흔적으로 보인다.");
+    strcpy(e1->location, "옥상");
+    e1->next = NULL;
 
-    // 증거 초기화
-    strcpy(game->evidences[0].name, "신발 끌린 자국");
-    strcpy(game->evidences[0].description, "옥상 난간 근처에서 발견된 신발 끌린 자국. 몸싸움의 흔적으로 보인다.");
-    strcpy(game->evidences[0].location, "옥상");
+    Evidence *e2 = malloc(sizeof(Evidence));
+    strcpy(e2->name, "금속 조각");
+    strcpy(e2->description, "전기 장비에서 떨어진 것으로 보이는 금속 조각.");
+    strcpy(e2->location, "옥상");
+    e2->next = e1;
 
-    strcpy(game->evidences[1].name, "금속 조각");
-    strcpy(game->evidences[1].description, "전기 장비에서 떨어진 것으로 보이는 금속 조각.");
-    strcpy(game->evidences[1].location, "옥상");
+    Evidence *e3 = malloc(sizeof(Evidence));
+    strcpy(e3->name, "구겨진 담배갑");
+    strcpy(e3->description, "옥상 입구 근처에서 발견된 구겨진 담배갑. 누군가 버린 텅 빈 담배갑이다.");
+    strcpy(e3->location, "옥상");
+    e3->next = e2;
 
-    strcpy(game->evidences[2].name, "구겨진 담배갑");
-    strcpy(game->evidences[2].description, "옥상 입구 근처에서 발견된 구겨진 담배갑. 누군가 버린 텅 빈 담배갑이다.");
-    strcpy(game->evidences[2].location, "옥상");
+    loc1->evidences = e3;
 
-    strcpy(game->evidences[3].name, "회로 설계도 원본");
-    strcpy(game->evidences[3].description, "정승훈의 이름으로 제출된 회로 설계도. 원래 피해자의 것이었으나 무단으로 변경된 흔적.");
-    strcpy(game->evidences[3].location, "전기공학 실험실");
+    Evidence *e4 = malloc(sizeof(Evidence));
+    strcpy(e4->name, "회로 설계도 원본");
+    strcpy(e4->description, "정승훈의 이름으로 제출된 회로 설계도. 원래 피해자의 것이었으나 무단으로 변경된 흔적.");
+    strcpy(e4->location, "전기공학 실험실");
+    e4->next = NULL;
 
-    strcpy(game->evidences[4].name, "실험용 PC의 로그");
-    strcpy(game->evidences[4].description, "사건 직후 실험실 PC에서 파일 삭제 시도가 있었던 로그.");
-    strcpy(game->evidences[4].location, "전기공학 실험실");
+    Evidence *e5 = malloc(sizeof(Evidence));
+    strcpy(e5->name, "실험용 PC의 로그");
+    strcpy(e5->description, "사건 직후 실험실 PC에서 파일 삭제 시도가 있었던 로그.");
+    strcpy(e5->location, "전기공학 실험실");
+    e5->next = e4;
 
-    strcpy(game->evidences[5].name, "출입 기록 흔적");
-    strcpy(game->evidences[5].description, "서버 기록에서 사건 시각 무단 접근 및 로그 삭제 시도가 있었던 흔적.");
-    strcpy(game->evidences[5].location, "전기공학 실험실");
+    Evidence *e6 = malloc(sizeof(Evidence));
+    strcpy(e6->name, "출입 기록 흔적");
+    strcpy(e6->description, "서버 기록에서 사건 시각 무단 접근 및 로그 삭제 시도가 있었던 흔적.");
+    strcpy(e6->location, "전기공학 실험실");
+    e6->next = e5;
 
-    // 용의자 초기화
-    strcpy(game->suspects[0].name, "이유빈");
-    strcpy(game->suspects[0].job, "컴퓨터공학과 3학년");
-    strcpy(game->suspects[0].personality, "분석적이고 내성적이며 완벽주의 성향");
-    strcpy(game->suspects[0].relationWithVictim, "졸업 프로젝트 후배이자 공동 개발자");
-    strcpy(game->suspects[0].alibi, "10시 전후로 제1공학관 3층 세미나실에서 코드 수정 중");
-    strcpy(game->suspects[0].suspicious_points, "피해자에게 불만을 SNS에 토로, 3층 복도 CCTV에 서성이는 모습");
-    game->suspects[0].isCulprit = 0;
+    loc2->evidences = e6;
 
-    strcpy(game->suspects[1].name, "정승훈");
-    strcpy(game->suspects[1].job, "전기공학과 4학년");
-    strcpy(game->suspects[1].personality, "자존심 강하고 직설적");
-    strcpy(game->suspects[1].relationWithVictim, "공동 연구 프로젝트 전기회로 설계 담당");
-    strcpy(game->suspects[1].alibi, "10시경 전자실험실에서 회로 테스트 중 (혼자 있었음)");
-    strcpy(game->suspects[1].suspicious_points, "테스트보드에 피해자 이름, 리더 자리를 두고 피해자와 다툰 전적");
-    game->suspects[1].isCulprit = 1;
+    // 전체 증거 연결 (전역 evidence 리스트)
+    game->allEvidences = e6;
 
-    strcpy(game->suspects[2].name, "박정민");
-    strcpy(game->suspects[2].job, "제1공학관 조교");
-    strcpy(game->suspects[2].personality, "무뚝뚝하고 사적인 말이 없음");
-    strcpy(game->suspects[2].relationWithVictim, "자주 실험실 배정을 도와줌");
-    strcpy(game->suspects[2].alibi, "10시 이후부터 기숙사에 있었다고 주장");
-    strcpy(game->suspects[2].suspicious_points, "늦은 시간 공학관에 있었던 목격, 과거 항의 메일 존재");
-    game->suspects[2].isCulprit = 0;
+    // 용의자 연결리스트 생성
+    Suspect *s1 = malloc(sizeof(Suspect));
+    strcpy(s1->name, "이유빈");
+    strcpy(s1->job, "컴퓨터공학과 3학년");
+    strcpy(s1->personality, "분석적이고 내성적이며 완벽주의 성향");
+    strcpy(s1->relationWithVictim, "졸업 프로젝트 후배이자 공동 개발자");
+    strcpy(s1->alibi, "10시 전후로 제1공학관 3층 세미나실에서 코드 수정 중");
+    strcpy(s1->suspicious_points, "피해자에게 불만을 SNS에 토로, 3층 복도 CCTV에 서성이는 모습");
+    s1->isCulprit = 0; s1->interrogationCount = 0;
+    s1->next = NULL;
 
-    strcpy(game->suspects[3].name, "서지호");
-    strcpy(game->suspects[3].job, "전기공학과 졸업생");
-    strcpy(game->suspects[3].personality, "급한 성격, 감정 기복 있음");
-    strcpy(game->suspects[3].relationWithVictim, "벤처 프로젝트 조언자 역할");
-    strcpy(game->suspects[3].alibi, "근처 카페에 있었다고 주장하나 CCTV 없음");
-    strcpy(game->suspects[3].suspicious_points, "자금 투자 문제로 갈등, 사건 시각 무단 출입 흔적");
-    game->suspects[3].isCulprit = 0;
+    Suspect *s2 = malloc(sizeof(Suspect));
+    strcpy(s2->name, "정승훈");
+    strcpy(s2->job, "전기공학과 4학년");
+    strcpy(s2->personality, "자존심 강하고 직설적");
+    strcpy(s2->relationWithVictim, "공동 연구 프로젝트 전기회로 설계 담당");
+    strcpy(s2->alibi, "10시경 전자실험실에서 회로 테스트 중 (혼자 있었음)");
+    strcpy(s2->suspicious_points, "테스트보드에 피해자 이름, 리더 자리를 두고 피해자와 다툰 전적");
+    s2->isCulprit = 1; s2->interrogationCount = 0;
+    s2->next = s1;
 
-    // 기본 상태
-    game->foundEvidence[0] = 0;
+    Suspect *s3 = malloc(sizeof(Suspect));
+    strcpy(s3->name, "박정민");
+    strcpy(s3->job, "제1공학관 조교");
+    strcpy(s3->personality, "무뚝뚝하고 사적인 말이 없음");
+    strcpy(s3->relationWithVictim, "자주 실험실 배정을 도와줌");
+    strcpy(s3->alibi, "10시 이후부터 기숙사에 있었다고 주장");
+    strcpy(s3->suspicious_points, "늦은 시간 공학관에 있었던 목격, 과거 항의 메일 존재");
+    s3->isCulprit = 0; s3->interrogationCount = 0;
+    s3->next = s2;
+
+    Suspect *s4 = malloc(sizeof(Suspect));
+    strcpy(s4->name, "서지호");
+    strcpy(s4->job, "전기공학과 졸업생");
+    strcpy(s4->personality, "급한 성격, 감정 기복 있음");
+    strcpy(s4->relationWithVictim, "벤처 프로젝트 조언자 역할");
+    strcpy(s4->alibi, "근처 카페에 있었다고 주장하나 CCTV 없음");
+    strcpy(s4->suspicious_points, "자금 투자 문제로 갈등, 사건 시각 무단 출입 흔적");
+    s4->isCulprit = 0; s4->interrogationCount = 0;
+    s4->next = s3;
+
+    game->suspects = s4;
+
+    strcpy(game->currentLocationName, "옥상");
     game->pressChances = 5;
-    game->currentLocationIndex = 0;
-    game->scenarioNumber=1;
-    strcpy(game->currentLocationName, game->locations[0].name);  
+    game->scenarioNumber = 1;
 }
 
 void ending1(int isCorrect) {
@@ -157,7 +169,7 @@ void ending1(int isCorrect) {
         printf("당신은 진범이 정승훈임을 밝혀냈습니다. 프로젝트 갈등으로 김시훈을 옥상에서 밀쳤고, 증거를 조작하려 했으나 당신의 수사로 모든 진실이 드러났습니다.\n");
         printf("정승훈은 체포되었고, 김시훈의 억울함은 풀렸습니다.\n");
     } else {
-            printf("당신은 진범을 찾지 못했습니다. 김시훈의 죽음은 미제로 남았고, 진범은 사라졌습니다.\n");
-            printf("진실을 찾을 수 없음.\n");
+        printf("당신은 진범을 찾지 못했습니다. 김시훈의 죽음은 미제로 남았고, 진범은 사라졌습니다.\n");
+        printf("진실을 찾을 수 없음.\n");
     }
 }
