@@ -1,3 +1,6 @@
+#pip install openai
+#pip install python-dotenv
+
 from dotenv import load_dotenv
 from openai import OpenAI
 import os
@@ -25,15 +28,15 @@ def load_txt_data(filename):
                 entry[key] = value
     return entries
 
-suspects = load_txt_data("../game/assets/suspect_profiles.txt")
-evidences = load_txt_data("../game/assets/evidence.txt")
+suspects = load_txt_data("../AI_DetectiveGame/assets/suspect_profiles.txt")
+evidences = load_txt_data("../AI_DetectiveGame/assets/evidence.txt")
 
 # (3) 실행 인자 받기
 # 예시: python3 gpt_response.py press "이유빈"
 mode = sys.argv[1]  # 'press' or 'interrogate'
 suspect_name = sys.argv[2]
-question_file = f"../game/assets/question_{mode}.txt"
-response_file = f"../game/assets/response_{mode}.txt"
+question_file = f"../AI_DetectiveGame/assets/question_{mode}.txt"
+response_file = f"../AI_DetectiveGame/assets/response_{mode}.txt"
 
 # (4) 질문 읽기
 with open(question_file, 'r', encoding='utf-8') as f:
@@ -51,7 +54,7 @@ def build_system_prompt(suspects, evidences, suspect_name, mode):
 """.strip()
 
     if mode == "press":
-        prompt += """
+        prompt += f"""
 
 지금 너는 용의자 {suspect_name}를 연기하고 있어. 플레이어의 질문에 답해야 해.
 플레이어가 너에게 예리한 추궁을 할거야.
@@ -62,16 +65,14 @@ def build_system_prompt(suspects, evidences, suspect_name, mode):
 
 그 외에는 '잘못된 추궁'으로 간주해.
 
-응답은 아래의 포맷을 따르라:
-[응답]
-(용의자의 대답)
-
+응답은 무조건 아래의 포맷으로 출력하라. 반드시 태그 포함할 것:
+여기에 용의자의 대답
 [판단]
-정확한 추궁 | 잘못된 추궁 중 하나를 선택
+정확한 추궁 | 잘못된 추궁 중 하나만 출력
 """
 
     else:
-        prompt += "\n지금 너는 용의자 {suspect_name}이야. 플레이어가 너에게 심문할 거야. 너는 이 인물을 연기해서 자연스럽게 답변해."
+        prompt += f"\n지금 너는 용의자 {suspect_name}이야. 플레이어가 너에게 심문할 거야. 너는 이 인물을 연기해서 자연스럽게 답변해."
 
     return prompt
 
