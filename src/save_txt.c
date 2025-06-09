@@ -2,8 +2,6 @@
 #include <string.h>
 #include "game_structs.h"
 
-
-// 증거 정보 저장
 void saveEvidenceToFile(GameState *game, const char *filename) {
     FILE *fp = fopen(filename, "w");
     if (!fp) {
@@ -11,18 +9,18 @@ void saveEvidenceToFile(GameState *game, const char *filename) {
         return;
     }
 
-    for (int i = 0; i < game->evidenceCount; i++) {
-        Evidence *e = &game->evidences[i];
+    Evidence *e = game->allEvidences;
+    while (e != NULL) {
         fprintf(fp, "이름: %s\n", e->name);
         fprintf(fp, "설명: %s\n", e->description);
         fprintf(fp, "위치: %s\n", e->location);
         fprintf(fp, "---\n");
+        e = e->next;
     }
 
     fclose(fp);
 }
 
-// 용의자 정보 저장
 void saveSuspectsToFile(GameState *game, const char *filename) {
     FILE *fp = fopen(filename, "w");
     if (!fp) {
@@ -30,8 +28,8 @@ void saveSuspectsToFile(GameState *game, const char *filename) {
         return;
     }
 
-    for (int i = 0; i < game->suspectCount; i++) {
-        Suspect *s = &game->suspects[i];
+    Suspect *s = game->suspects;
+    while (s != NULL) {
         fprintf(fp, "이름: %s\n", s->name);
         fprintf(fp, "직업: %s\n", s->job);
         fprintf(fp, "성격: %s\n", s->personality);
@@ -40,6 +38,7 @@ void saveSuspectsToFile(GameState *game, const char *filename) {
         fprintf(fp, "수상한 점: %s\n", s->suspicious_points);
         fprintf(fp, "범인 여부: %s\n", s->isCulprit ? "범인" : "아님");
         fprintf(fp, "---\n");
+        s = s->next;
     }
     
     fclose(fp);
