@@ -1,54 +1,52 @@
 #ifndef GAME_STRUCTS_H
 #define GAME_STRUCTS_H
 
-#define MAX_SUSPECTS 4
-#define MAX_LOCATIONS 3
-#define MAX_EVIDENCE 6
-#define MAX_INTERROGATIONS 10
-#define MAX_PRESS_CHANCES 5
+#define MAX_NAME_LENGTH 64
+#define MAX_JOB_LENGTH 64
+#define MAX_PERSONALITY_LENGTH 128
+#define MAX_RELATION_LENGTH 128
+#define MAX_ALIBI_LENGTH 256
+#define MAX_SUSPICIOUS_LENGTH 256
 
-// 증거 구조체
-typedef struct {
-    char name[64];
+// 증거 구조체 (연결리스트)
+typedef struct Evidence {
+    char name[MAX_NAME_LENGTH];
     char description[256];
-    char location[64]; // 발견된 장소
+    char location[MAX_NAME_LENGTH]; // 발견된 장소
+    int found;
+    struct Evidence* next;
 } Evidence;
 
-// 장소 구조체
-typedef struct {
-    char name[64];
-    int hasEvidence[MAX_EVIDENCE]; // 이 장소에 있는 증거의 인덱스
-    int evidenceCount;
+// 장소 구조체 (연결리스트)
+typedef struct Location {
+    char name[MAX_NAME_LENGTH];
+    Evidence* evidences; // 해당 장소의 증거 연결리스트
+    struct Location* next;
 } Location;
 
-// 용의자 구조체
-typedef struct {
+// 용의자 구조체 (연결리스트)
+typedef struct Suspect {
     char name[32];
-    char job[64];
-    char personality[128];
-    char relationWithVictim[128];
-    char alibi[256];
-    char suspicious_points[256];
-    int isCulprit; // 1이면 범인
+    char job[MAX_JOB_LENGTH];
+    char personality[MAX_PERSONALITY_LENGTH];
+    char relationWithVictim[MAX_RELATION_LENGTH];
+    char alibi[MAX_ALIBI_LENGTH];
+    char suspicious_points[MAX_SUSPICIOUS_LENGTH];
+    int isCulprit;
     int interrogationCount;
+    struct Suspect* next;
 } Suspect;
 
 // 전체 게임 상태 구조체
-typedef struct {
-    int evidenceCount; // 실제 증거 개수
-    int suspectCount;  // 실제 용의자 수
-    Location locations[MAX_LOCATIONS];
-    Suspect suspects[MAX_SUSPECTS];
-    Evidence evidences[MAX_EVIDENCE];
-    int currentLocationIndex;
-    int foundEvidence[MAX_EVIDENCE]; // 플레이어가 발견한 증거 여부
-    int pressChances; // 추궁 기회
-    Suspect interrogationCount[MAX_INTERROGATIONS]; // 심문 횟수
-    char currentLocationName[64]; // 현재 위치 이름
+typedef struct GameState {
+    Location* locations;
+    Suspect* suspects;
+    Evidence* allEvidences;  // 전체 증거 목록 (장소 외부에서도 관리 가능)
+    int pressChances;
+    char currentLocationName[MAX_NAME_LENGTH];
     int scenarioNumber;
-
-    
 } GameState;
+
 
 void CaseIntroduction1();
 void CaseIntroduction2();
