@@ -19,7 +19,7 @@ game/
 
 ```bash
 cd src
-gcc main.c command_parser.c save_txt.c game_data1.c game_data2.c game_data3.c -o ../main
+gcc main.c command_parser.c gpt_queue.c save_txt.c game_data1.c game_data2.c game_data3.c -o ../main
 ```
 
 ### 2. 게임 실행
@@ -45,7 +45,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 ## How to Play
 
 * 텍스트 명령어로 이동, 탐색, 증거 조사, 용의자 심문/추궁 가능
-* 증거를 모아 진범을 지목하고 사건을 해결해야 함
+* 증거를 모아 진범을 지목하고 사건을 해결하면 게임 종료
 
 ### Command
 
@@ -90,58 +90,56 @@ OPENAI_API_KEY=your_openai_api_key_here
 ### 1. `Evidence` 구조체
 
 ```c
-typedef struct {
-    char name[64];
+typedef struct Evidence {
+    char name[MAX_NAME_LENGTH];
     char description[256];
-    char location[64];
+    char location[MAX_NAME_LENGTH]; // 발견된 장소
+    int found;
+    struct Evidence* next;
 } Evidence;
 ```
 
 ### 2. `Suspect` 구조체
 
 ```c
-typedef struct {
+typedef struct Suspect {
     char name[32];
-    char job[64];
-    char personality[128];
-    char relationWithVictim[128];
-    char alibi[256];
-    char suspicious_points[256];
+    char job[MAX_JOB_LENGTH];
+    char personality[MAX_PERSONALITY_LENGTH];
+    char relationWithVictim[MAX_RELATION_LENGTH];
+    char alibi[MAX_ALIBI_LENGTH];
+    char suspicious_points[MAX_SUSPICIOUS_LENGTH];
     int isCulprit;
     int interrogationCount;
+    struct Suspect* next;
 } Suspect;
 ```
 
 ### 3. `Location` 구조체
 
 ```c
-typedef struct {
-    char name[64];
-    int hasEvidence[MAX_EVIDENCE];
-    int evidenceCount;
+typedef struct Location {
+    char name[MAX_NAME_LENGTH];
+    Evidence* evidences; // 해당 장소의 증거 연결리스트
+    struct Location* next;
 } Location;
 ```
 
 ### 4. `GameState` 구조체
 
 ```c
-typedef struct {
-    int evidenceCount;
-    int suspectCount;
-    Location locations[MAX_LOCATIONS];
-    Suspect suspects[MAX_SUSPECTS];
-    Evidence evidences[MAX_EVIDENCE];
-    int currentLocationIndex;
-    int foundEvidence[MAX_EVIDENCE];
+typedef struct GameState {
+    Location* locations;
+    Suspect* suspects;
+    Evidence* allEvidences;
     int pressChances;
-    Suspect interrogationCount[MAX_INTERROGATIONS];
-    char currentLocationName[64];
+    char currentLocationName[MAX_NAME_LENGTH];
     int scenarioNumber;
 } GameState;
 ```
 
-이러한 구조를 통해 C 언어 기반에서 객체 지향적인 상태 관리를 구현하였으며, 텍스트 기반 인터페이스와 GPT API 연동을 조합하여 직관적인 추리 게임을 구성하였습니다.
+이러한 연결리스트 구조를 통해 C 언어 기반에서 객체 지향적인 상태 관리를 구현하였으며, 텍스트 기반 인터페이스와 GPT API 연동을 조합하여 직관적인 추리 게임을 구성하였습니다.
 
 ---
 
-🔧 개발자용 안내: `save_txt.c`에서는 구조체 데이터를 `evidence.txt`, `suspect_profiles.txt`로 저장하며, Python의 `gpt_response.py`가 이를 읽어 GPT-3.5에게 질문을 전달합니다.
+추가 안내: `save_txt.c`에서는 구조체 데이터를 `evidence.txt`, `suspect_profiles.txt`로 저장하며, Python의 `gpt_response.py`가 이를 읽어 GPT-3.5에게 질문을 전달합니다.
