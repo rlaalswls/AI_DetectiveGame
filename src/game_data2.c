@@ -1,10 +1,8 @@
-//게임 데이터 초기화 시나리오2
-
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "game_structs.h"
 
-// 사건 개요
 void CaseIntroduction2() {
     printf("=====================================================================\n");
     printf("🔭 CODE 404: Observatory Unavailable\n");
@@ -15,7 +13,6 @@ void CaseIntroduction2() {
     printf("범행 장소는 관측소의 메인 관측실로 추정되며, 외부인의 침입 흔적은 발견되지 않았습니다.\n");
     printf("관측소 내부 인물들의 진술은 엇갈리고 있으며, 현장에는 수상한 증거들이 남겨져 있습니다.\n");
     printf("당신의 임무는 이 고요한 밤하늘 아래에서 벌어진 진실을 파헤치는 것입니다.\n");
-    
     printf("\n<용의자 목록>\n");
 
     printf("\n1. 장유진 (39세, 기상 데이터 분석가)\n");
@@ -53,86 +50,99 @@ void CaseIntroduction2() {
 
 void init_game_state2(GameState *game) {
     memset(game, 0, sizeof(GameState));
-    game->evidenceCount = 6;
-    game->suspectCount = 3;
 
-    // 장소 초기화
-    strcpy(game->locations[0].name, "관측소 주차장");
-    game->locations[0].evidenceCount = 0;
+    // 장소 연결리스트
+    Location *loc1 = malloc(sizeof(Location));
+    strcpy(loc1->name, "관측실");
+    loc1->evidences = NULL;
+    loc1->next = NULL;
 
-    strcpy(game->locations[1].name, "관측실");
-    game->locations[1].hasEvidence[0] = 0;
-    game->locations[1].hasEvidence[1] = 1;
-    game->locations[1].hasEvidence[2] = 2;
-    game->locations[1].evidenceCount = 3;
+    Location *loc2 = malloc(sizeof(Location));
+    strcpy(loc2->name, "야외 전망대");
+    loc2->evidences = NULL;
+    loc2->next = NULL;
 
-    strcpy(game->locations[2].name, "야외 전망대");
-    game->locations[2].hasEvidence[0] = 3;
-    game->locations[2].hasEvidence[1] = 4;
-    game->locations[2].hasEvidence[2] = 5;
-    game->locations[2].evidenceCount = 3;
+    loc1->next = loc2;
+    game->locations = loc1;
 
-    // 플레이어 시작 위치
-    game->currentLocationIndex = 0;
-    strcpy(game->currentLocationName, game->locations[0].name);
+    // 증거 연결리스트 및 장소 연결
+    Evidence *e1 = malloc(sizeof(Evidence));
+    strcpy(e1->name, "피해자의 연구 노트");
+    strcpy(e1->description, "책상 위에 있던 노트. 이준호의 아이디어가 피해자 이름으로 기록되었다.");
+    strcpy(e1->location, "관측실");
+    e1->next = NULL;
 
-    // Evidence
-    strcpy(game->evidences[0].name, "피해자의 연구 노트");
-    strcpy(game->evidences[0].description, "책상 위에 있던 노트. 이준호의 아이디어가 피해자 이름으로 기록되었다.");
-    strcpy(game->evidences[0].location, "관측실");
+    Evidence *e2 = malloc(sizeof(Evidence));
+    strcpy(e2->name, "희미한 흙자국");
+    strcpy(e2->description, "관측실 출입구 바닥에 있던 외부 흙자국.");
+    strcpy(e2->location, "관측실");
+    e2->next = e1;
 
-    strcpy(game->evidences[1].name, "희미한 흙자국");
-    strcpy(game->evidences[1].description, "관측실 출입구 바닥에 있던 외부 흙자국.");
-    strcpy(game->evidences[1].location, "관측실");
+    Evidence *e3 = malloc(sizeof(Evidence));
+    strcpy(e3->name, "기상 장비 보고서");
+    strcpy(e3->description, "관측 장비 사이에 낀 보고서 출력물. 장유진 서명 있음.");
+    strcpy(e3->location, "관측실");
+    e3->next = e2;
 
-    strcpy(game->evidences[2].name, "기상 장비 보고서 출력물");
-    strcpy(game->evidences[2].description, "관측 장비 사이에 낀 출력물. 장유진 서명 있음.");
-    strcpy(game->evidences[2].location, "관측실");
+    loc1->evidences = e3;
 
-    strcpy(game->evidences[3].name, "삼각대");
-    strcpy(game->evidences[3].description, "전망대 바위 뒤에 숨겨져 있던 접이식 삼각대. 피해자의 혈흔이 묻어있다.");
-    strcpy(game->evidences[3].location, "야외 전망대");
+    Evidence *e4 = malloc(sizeof(Evidence));
+    strcpy(e4->name, "삼각대");
+    strcpy(e4->description, "전망대 바위 뒤에 숨겨져 있던 접이식 삼각대. 피해자의 혈흔이 묻어있다.");
+    strcpy(e4->location, "야외 전망대");
+    e4->next = NULL;
 
-    strcpy(game->evidences[4].name, "이준호의 디지털 카메라");
-    strcpy(game->evidences[4].description, "전망대 난간 위. 일부 사진 타임스탬프 조작이 의심된다.");
-    strcpy(game->evidences[4].location, "야외 전망대");
+    Evidence *e5 = malloc(sizeof(Evidence));
+    strcpy(e5->name, "디지털 카메라");
+    strcpy(e5->description, "전망대 난간 위. 일부 사진 타임스탬프 조작이 의심된다.");
+    strcpy(e5->location, "야외 전망대");
+    e5->next = e4;
 
-    strcpy(game->evidences[5].name, "피 묻은 휴지");
-    strcpy(game->evidences[5].description, "삼각대 근처 바닥에서 발견. 피를 닦은 흔적이 있다.");
-    strcpy(game->evidences[5].location, "야외 전망대");
+    Evidence *e6 = malloc(sizeof(Evidence));
+    strcpy(e6->name, "피 묻은 휴지");
+    strcpy(e6->description, "삼각대 근처 바닥에서 발견. 피를 닦은 흔적이 있다.");
+    strcpy(e6->location, "야외 전망대");
+    e6->next = e5;
 
-    // Suspects
-    strcpy(game->suspects[0].name, "장유진");
-    strcpy(game->suspects[0].job, "기상 데이터 분석가");
-    strcpy(game->suspects[0].personality, "차분하고 논리적, 말수가 적음");
-    strcpy(game->suspects[0].relationWithVictim, "전 연인, 최근 사이가 나빠짐");
-    strcpy(game->suspects[0].alibi, "밤 10시~12시 기상 장비실에서 데이터 정리 중");
-    strcpy(game->suspects[0].suspicious_points, "피해자와 말다툼 목격담 존재");
-    game->suspects[0].isCulprit = 0;
+    loc2->evidences = e6;
+    game->allEvidences = e6;
 
-    strcpy(game->suspects[1].name, "이준호");
-    strcpy(game->suspects[1].job, "견습 연구원");
-    strcpy(game->suspects[1].personality, "예의 바르나 위축된 태도, 조심스러움");
-    strcpy(game->suspects[1].relationWithVictim, "멘토-멘티, 자주 질책당함");
-    strcpy(game->suspects[1].alibi, "11시경 야외 전망대에서 별 사진 촬영");
-    strcpy(game->suspects[1].suspicious_points, "촬영한 사진의 타임스탬프가 실제 시간과 불일치");
-    game->suspects[1].isCulprit = 1;
+    // 용의자 연결리스트
+    Suspect *s1 = malloc(sizeof(Suspect));
+    strcpy(s1->name, "장유진");
+    strcpy(s1->job, "기상 데이터 분석가");
+    strcpy(s1->personality, "차분하고 논리적, 말수가 적음");
+    strcpy(s1->relationWithVictim, "전 연인, 최근 사이가 나빠짐");
+    strcpy(s1->alibi, "밤 10시~12시 기상 장비실에서 데이터 정리 중");
+    strcpy(s1->suspicious_points, "피해자와 말다툼 목격담 존재");
+    s1->isCulprit = 0; s1->interrogationCount = 0;
+    s1->next = NULL;
 
-    strcpy(game->suspects[2].name, "오미경");
-    strcpy(game->suspects[2].job, "행정팀장");
-    strcpy(game->suspects[2].personality, "사무적, 완고, 책임감 강함");
-    strcpy(game->suspects[2].relationWithVictim, "프로젝트 예산 문제로 갈등");
-    strcpy(game->suspects[2].alibi, "밤 11시 연구소 사무실에서 예산 정리 중");
-    strcpy(game->suspects[2].suspicious_points, "사무실은 관측실과 인접");
-    game->suspects[2].isCulprit = 0;
+    Suspect *s2 = malloc(sizeof(Suspect));
+    strcpy(s2->name, "이준호");
+    strcpy(s2->job, "견습 연구원");
+    strcpy(s2->personality, "예의 바르나 위축된 태도, 조심스러움");
+    strcpy(s2->relationWithVictim, "멘토-멘티, 자주 질책당함");
+    strcpy(s2->alibi, "11시경 야외 전망대에서 별 사진 촬영");
+    strcpy(s2->suspicious_points, "촬영한 사진의 타임스탬프가 실제 시간과 불일치");
+    s2->isCulprit = 1; s2->interrogationCount = 0;
+    s2->next = s1;
 
-    //기본 상태
-    game->foundEvidence[0] = 0;
+    Suspect *s3 = malloc(sizeof(Suspect));
+    strcpy(s3->name, "오미경");
+    strcpy(s3->job, "행정팀장");
+    strcpy(s3->personality, "사무적, 완고, 책임감 강함");
+    strcpy(s3->relationWithVictim, "프로젝트 예산 문제로 갈등");
+    strcpy(s3->alibi, "밤 11시 연구소 사무실에서 예산 정리 중");
+    strcpy(s3->suspicious_points, "사무실은 관측실과 인접");
+    s3->isCulprit = 0; s3->interrogationCount = 0;
+    s3->next = s2;
+
+    game->suspects = s3;
+
+    strcpy(game->currentLocationName, "관측실");
     game->pressChances = 5;
-    game->currentLocationIndex = 0;
-    game->scenarioNumber=2;
-    strcpy(game->currentLocationName, game->locations[0].name);  
-
+    game->scenarioNumber = 2;
 }
 
 void ending2(int isCorrect) {
@@ -141,8 +151,8 @@ void ending2(int isCorrect) {
         printf("결국 이준호는 자신의 죄를 모두 자백했습니다. 윤지훈 박사의 억울한 죽음의 진상이 세상에 드러났습니다.\n");
         printf("밤하늘 아래 묻힐 뻔한 진실을 당신이 밝혀냈습니다.\n");
     } else {
-            printf("안타깝게도 당신은 진범을 찾지 못했습니다. 단서들을 제대로 연결하지 못했거나, 다른 용의자에게 집중했습니다.\n");
-            printf("진범인 이준호는 처벌받지 않았고, 윤지훈 박사의 죽음은 미제 사건으로 남았습니다. 당신이 놓친 증거들은 결국 빛을 보지 못했습니다.\n");
-            printf("밤하늘 아래, 진실은 영원히 어둠 속에 묻히게 되었습니다.\n");
+        printf("안타깝게도 당신은 진범을 찾지 못했습니다. 단서들을 제대로 연결하지 못했거나, 다른 용의자에게 집중했습니다.\n");
+        printf("진범인 이준호는 처벌받지 않았고, 윤지훈 박사의 죽음은 미제 사건으로 남았습니다. 당신이 놓친 증거들은 결국 빛을 보지 못했습니다.\n");
+        printf("밤하늘 아래, 진실은 영원히 어둠 속에 묻히게 되었습니다.\n");
     }
 }
